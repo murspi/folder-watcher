@@ -1,20 +1,27 @@
+import logging
 import json
 import os
 from watcher import start_watching
 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+LOGS_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOGS_DIR, exist_ok=True)
+
+logging.basicConfig(
+    filename=os.path.join(LOGS_DIR, "events.log"),
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 def load_config():
-    # Get the project root (one level above /src)
-    base_dir = os.path.dirname(os.path.dirname(__file__))
-    config_path = os.path.join(base_dir, "config.json")
-
-    print("Loading config from:", config_path)
-
+    config_path = os.path.join(BASE_DIR, "config.json")
     with open(config_path) as f:
         return json.load(f)
 
 def main():
     config = load_config()
-    folder = config["watch_folder"]
+    folder = os.path.join(BASE_DIR, config["watch_folder"])
 
     # Ensure the folder exists
     os.makedirs(folder, exist_ok=True)
